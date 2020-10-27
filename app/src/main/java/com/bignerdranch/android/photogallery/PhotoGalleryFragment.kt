@@ -6,55 +6,43 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bignerdranch.android.photogallery.api.FlickrApi
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.scalars.ScalarsConverterFactory
 
 private const val TAG = "PhotoGalleryFragment"
 
 class PhotoGalleryFragment
     : Fragment() {
     private lateinit var photoRecyclerView: RecyclerView
+    private lateinit var photoGalleryViewModel: PhotoGalleryViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val retrofit: Retrofit = Retrofit.Builder()
-            .baseUrl("https://www.flickr.com/")
-            .addConverterFactory(ScalarsConverterFactory.create())
-            .build()
-
-        val flickrApi: FlickrApi = retrofit.create(FlickrApi::class.java)
-
-        val flickrHomePageRequest: Call<String> = flickrApi.fetchContents()
-
-        flickrHomePageRequest.enqueue(object: Callback<String> {
-            override fun onFailure(call: Call<String>, t: Throwable) {
-                Log.e(TAG, "Failed to fetch photos", t)
-            }
-
-            override fun onResponse(call: Call<String>, response: Response<String>) {
-                Log.d(TAG, "Response received: ${response.body()}")
-            }
-        })
+        photoGalleryViewModel = ViewModelProvider(this).get(PhotoGalleryViewModel::class.java)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_photo_gallery, container, false)
 
         photoRecyclerView = view.findViewById(R.id.photo_recycler_view)
         photoRecyclerView.layoutManager = GridLayoutManager(context, 3)
 
         return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        photoGalleryViewModel.galleryItemLiveData.observe(
+            viewLifecycleOwner,
+            Observer { galleryItems ->
+                Log.d(TAG, "Response received: $galleryItems")
+                // Eventually, update data backing th recycler view
+        })
     }
 
     companion object {
