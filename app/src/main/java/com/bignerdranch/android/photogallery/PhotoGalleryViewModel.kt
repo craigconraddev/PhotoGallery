@@ -5,9 +5,15 @@ import androidx.lifecycle.ViewModel
 
 class PhotoGalleryViewModel() : ViewModel() {
 
+    private var flickrFetcher = FlickrFetcher()
     var galleryItemLiveData: LiveData<List<GalleryItem>>
 
     init {
-        galleryItemLiveData = FlickrFetcher().fetchPhotos()
+        galleryItemLiveData = flickrFetcher.fetchPhotos()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        flickrFetcher.cancelRequestInFlight()
     }
 }
