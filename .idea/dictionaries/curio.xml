@@ -2,6 +2,7 @@
   <dictionary name="curio">
     <words>
       <w>flickr</w>
+      <w>gson</w>
     </words>
   </dictionary>
 </component>
