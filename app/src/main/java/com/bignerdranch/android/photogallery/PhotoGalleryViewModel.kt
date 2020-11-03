@@ -2,12 +2,13 @@ package com.bignerdranch.android.photogallery
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.liveData
+import kotlinx.coroutines.Dispatchers
 
 class PhotoGalleryViewModel() : ViewModel() {
 
-    var galleryItemLiveData: LiveData<List<GalleryItem>>
-
-    init {
-        galleryItemLiveData = FlickrFetcher().fetchPhotos()
+    val galleryItemLiveData = liveData(Dispatchers.IO) {
+        val retrieved = FlickrFetcher().fetchPhotos()
+        emit(retrieved)
     }
 }

@@ -41,7 +41,7 @@ class PhotoGalleryFragment
 
         photoGalleryViewModel.galleryItemLiveData.observe(
             viewLifecycleOwner,
-            Observer { galleryItems ->
+            Observer { galleryItems: List<GalleryItem> ->
                 Log.d(TAG, "Response received: $galleryItems")
                 photoRecyclerView.adapter = PhotoAdapter(galleryItems)
         })
