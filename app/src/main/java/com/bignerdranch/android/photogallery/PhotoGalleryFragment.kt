@@ -1,18 +1,21 @@
 package com.bignerdranch.android.photogallery
 
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AutoCompleteTextView
 import android.widget.TextView
+import androidx.core.view.doOnLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlin.math.floor
 
 private const val TAG = "PhotoGalleryFragment"
 
@@ -31,9 +34,27 @@ class PhotoGalleryFragment
         val view = inflater.inflate(R.layout.fragment_photo_gallery, container, false)
 
         photoRecyclerView = view.findViewById(R.id.photo_recycler_view)
-        photoRecyclerView.layoutManager = GridLayoutManager(context, 3)
+       // photoRecyclerView.layoutManager = GridLayoutManager(context, 3)
+
+        photoRecyclerView.doOnLayout {
+            val spanCount = calculateSize()
+            Log.d(TAG, "spanCount: $spanCount")
+            photoRecyclerView.layoutManager = GridLayoutManager(context, spanCount)
+            //(photoRecyclerView.layoutManager as GridLayoutManager).spanCount = spanCount
+            photoRecyclerView.requestLayout()
+        }
 
         return view
+    }
+
+    fun calculateSize(): Int {
+        return floor((photoRecyclerView.width / convertDPToPixels(120)).toDouble()).toInt()
+    }
+
+    private fun convertDPToPixels(dp : Int): Float {
+        val metrics = DisplayMetrics()
+        activity!!.windowManager.defaultDisplay.getMetrics(metrics)
+        return (dp *  metrics.density).toFloat()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
