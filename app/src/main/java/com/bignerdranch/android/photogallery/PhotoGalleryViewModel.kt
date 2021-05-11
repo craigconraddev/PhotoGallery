@@ -8,6 +8,6 @@ class PhotoGalleryViewModel() : ViewModel() {
     var galleryItemLiveData: LiveData<List<GalleryItem>>
 
     init {
-        galleryItemLiveData = FlickrFetcher().fetchPhotos()
+        galleryItemLiveData = FlickrFetcher().searchPhotos("car")
     }
 }
